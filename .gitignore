@@ -34,5 +34,6 @@ Thumbs.db
 
 # ---------- Scratch files ----------
 _*.py
+!_build_hero.py
 *.log
 *.tmp

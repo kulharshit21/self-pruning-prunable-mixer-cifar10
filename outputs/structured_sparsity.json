@@ -1,0 +1,191 @@
+[
+  {
+    "lambda": 1e-07,
+    "threshold": 0.01,
+    "global_unstructured": 0.20015389181628937,
+    "global_row_sparsity": 0.0,
+    "global_col_sparsity": 0.0,
+    "flops_dense": 57060864,
+    "flops_retained_unstruct": 45639899,
+    "flops_retained_struct": 57060864,
+    "flop_savings_unstruct": 0.20015408459290063,
+    "flop_savings_struct": 0.0,
+    "per_path_structured": {
+      "patch_embed": {
+        "dead_rows": 0,
+        "total_rows": 768,
+        "dead_cols": 0,
+        "total_cols": 48,
+        "unstruct_pruned": 0,
+        "unstruct_total": 36864,
+        "layers": 1,
+        "row_sparsity": 0.0,
+        "col_sparsity": 0.0,
+        "unstructured_sparsity": 0.0
+      },
+      "token_mix": {
+        "dead_rows": 0,
+        "total_rows": 3840,
+        "dead_cols": 0,
+        "total_cols": 3840,
+        "unstruct_pruned": 553,
+        "unstruct_total": 393216,
+        "layers": 24,
+        "row_sparsity": 0.0,
+        "col_sparsity": 0.0,
+        "unstructured_sparsity": 0.0014063517252604167
+      },
+      "channel_mix": {
+        "dead_rows": 0,
+        "total_rows": 46080,
+        "dead_cols": 0,
+        "total_cols": 46080,
+        "unstruct_pruned": 11420401,
+        "unstruct_total": 56623104,
+        "layers": 24,
+        "row_sparsity": 0.0,
+        "col_sparsity": 0.0,
+        "unstructured_sparsity": 0.20169153919926397
+      },
+      "classifier": {
+        "dead_rows": 0,
+        "total_rows": 10,
+        "dead_cols": 0,
+        "total_cols": 768,
+        "unstruct_pruned": 0,
+        "unstruct_total": 7680,
+        "layers": 1,
+        "row_sparsity": 0.0,
+        "col_sparsity": 0.0,
+        "unstructured_sparsity": 0.0
+      }
+    },
+    "per_layer_count": 50
+  },
+  {
+    "lambda": 1e-06,
+    "threshold": 0.01,
+    "global_unstructured": 0.8890264788139205,
+    "global_row_sparsity": 0.4201546412087262,
+    "global_col_sparsity": 0.43489829706717126,
+    "flops_dense": 57060864,
+    "flops_retained_unstruct": 6332235,
+    "flops_retained_struct": 24095808,
+    "flop_savings_unstruct": 0.8890266540653853,
+    "flop_savings_struct": 0.5777174351934103,
+    "per_path_structured": {
+      "patch_embed": {
+        "dead_rows": 0,
+        "total_rows": 768,
+        "dead_cols": 0,
+        "total_cols": 48,
+        "unstruct_pruned": 42,
+        "unstruct_total": 36864,
+        "layers": 1,
+        "row_sparsity": 0.0,
+        "col_sparsity": 0.0,
+        "unstructured_sparsity": 0.0011393229166666667
+      },
+      "token_mix": {
+        "dead_rows": 4,
+        "total_rows": 3840,
+        "dead_cols": 6,
+        "total_cols": 3840,
+        "unstruct_pruned": 69689,
+        "unstruct_total": 393216,
+        "layers": 24,
+        "row_sparsity": 0.0010416666666666667,
+        "col_sparsity": 0.0015625,
+        "unstructured_sparsity": 0.1772282918294271
+      },
+      "channel_mix": {
+        "dead_rows": 21297,
+        "total_rows": 46080,
+        "dead_cols": 22059,
+        "total_cols": 46080,
+        "unstruct_pruned": 50658888,
+        "unstruct_total": 56623104,
+        "layers": 24,
+        "row_sparsity": 0.46217447916666665,
+        "col_sparsity": 0.4787109375,
+        "unstructured_sparsity": 0.8946681552463107
+      },
+      "classifier": {
+        "dead_rows": 0,
+        "total_rows": 10,
+        "dead_cols": 0,
+        "total_cols": 768,
+        "unstruct_pruned": 0,
+        "unstruct_total": 7680,
+        "layers": 1,
+        "row_sparsity": 0.0,
+        "col_sparsity": 0.0,
+        "unstructured_sparsity": 0.0
+      }
+    },
+    "per_layer_count": 50
+  },
+  {
+    "lambda": 1e-05,
+    "threshold": 0.01,
+    "global_unstructured": 0.9922218668122516,
+    "global_row_sparsity": 0.8048246479151051,
+    "global_col_sparsity": 0.7867786187322611,
+    "flops_dense": 57060864,
+    "flops_retained_unstruct": 443814,
+    "flops_retained_struct": 4437152,
+    "flop_savings_unstruct": 0.9922220946391558,
+    "flop_savings_struct": 0.9222382612362827,
+    "per_path_structured": {
+      "patch_embed": {
+        "dead_rows": 0,
+        "total_rows": 768,
+        "dead_cols": 0,
+        "total_cols": 48,
+        "unstruct_pruned": 1166,
+        "unstruct_total": 36864,
+        "layers": 1,
+        "row_sparsity": 0.0,
+        "col_sparsity": 0.0,
+        "unstructured_sparsity": 0.03162977430555555
+      },
+      "token_mix": {
+        "dead_rows": 956,
+        "total_rows": 3840,
+        "dead_cols": 921,
+        "total_cols": 3840,
+        "unstruct_pruned": 259614,
+        "unstruct_total": 393216,
+        "layers": 24,
+        "row_sparsity": 0.24895833333333334,
+        "col_sparsity": 0.23984375,
+        "unstructured_sparsity": 0.6602325439453125
+      },
+      "channel_mix": {
+        "dead_rows": 39847,
+        "total_rows": 46080,
+        "dead_cols": 38997,
+        "total_cols": 46080,
+        "unstruct_pruned": 56356002,
+        "unstruct_total": 56623104,
+        "layers": 24,
+        "row_sparsity": 0.8647352430555556,
+        "col_sparsity": 0.8462890625,
+        "unstructured_sparsity": 0.9952828089396158
+      },
+      "classifier": {
+        "dead_rows": 0,
+        "total_rows": 10,
+        "dead_cols": 0,
+        "total_cols": 768,
+        "unstruct_pruned": 255,
+        "unstruct_total": 7680,
+        "layers": 1,
+        "row_sparsity": 0.0,
+        "col_sparsity": 0.0,
+        "unstructured_sparsity": 0.033203125
+      }
+    },
+    "per_layer_count": 50
+  }
+]

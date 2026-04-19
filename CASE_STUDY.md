@@ -238,6 +238,43 @@ keeps. This is *emergent* - the L1 term penalises only gate values, not
 weights, so the alignment is a behavioural consequence of joint
 optimisation, not a regulariser imposed by hand.
 
+### 3.8 Structured vs unstructured sparsity
+
+![Structured sparsity](figures/fig9_structured_sparsity.png)
+
+The sparsity numbers reported above are **unstructured** - they count
+individual pruned weights. On commodity hardware without a sparse kernel,
+those zeros still consume compute during dense GEMM. To quantify the
+**compute saving that is actually realizable on a standard GPU matmul**, we
+reload each checkpoint and measure, for every `PrunableLinear`, how many
+*entire output rows* and *entire input columns* have **all** their gates
+below the pruning threshold - such rows and columns can be physically
+deleted from `W`, shrinking the matmul dimensions.
+
+| lambda | unstructured | row sparsity | col sparsity | dense-GEMM FLOP savings |
+|:------:|:------------:|:------------:|:------------:|:-----------------------:|
+| 1e-07  | 20.02%       | 0.00%        | 0.00%        | 0.00%                   |
+| 1e-06  | 88.90%       | 42.02%       | 43.49%       | **57.77%**              |
+| 1e-05  | 99.22%       | 80.48%       | 78.68%       | **92.22%**              |
+
+Two interesting observations:
+
+1. **The gate mechanism discovers structure on its own.** We never added a
+   group-lasso term, a channel-wise penalty, or any mechanism that would
+   push gates to align row- or column-wise. Entire neurons drop out because
+   the *weights themselves* become entirely surplus once neighbouring ones
+   are gated off. The penalty is purely element-wise; the structure is
+   emergent.
+2. **At very low $\lambda$ no structure appears** - the network prunes the
+   cheapest 20% of weights but spreads the pruning across every row, so no
+   dense-GEMM saving materialises. At moderate $\lambda$ the elementwise
+   pruning becomes dense enough inside some rows/columns that deleting them
+   wholesale is valid; at high $\lambda$ almost every row or column that
+   is pruned is pruned *completely*.
+
+Numbers computed by `analyze_structured_sparsity.py`, written to
+`outputs/structured_sparsity.json`.
+
 ---
 
 ## 4. Discussion
@@ -342,13 +379,73 @@ Natural extensions:
 - Seed             : 42
 - Total train time : 42.0 min
 
+## Appendix A. Relation to prior work on learnable sparsity
+
+The method studied here sits at the intersection of three well-known
+families of learnable-sparsity techniques. Positioning it explicitly is
+useful because the similarities are structural and the differences are
+mechanical.
+
+**A.1 Continuous relaxation of L0 regularisation
+(Louizos, Welling, Kingma, 2018).** Exact L0 - a penalty on the *count* of
+non-zero weights - is both non-differentiable and combinatorial. Louizos
+et al. relax it by routing every weight through a learned Bernoulli gate
+whose log-odds are learnable, and sample the gate via the *hard-concrete*
+distribution so gradients can pass through a stretched-and-clipped sigmoid.
+Our `PrunableLinear` is the **deterministic** limit of that scheme: rather
+than sample a gate, we multiply by $\sigma(g)$ directly, and rather than
+penalising $\mathbb{E}[\text{gate on}]$ we penalise its surrogate
+$\sum \sigma(g)$ as an L1. The two reduce to the same objective up to the
+reparameterisation choice; the deterministic version is smoother and
+easier to tune, at the cost of losing the formal L0 bound.
+
+**A.2 Variational Dropout for sparsity
+(Molchanov, Ashukha, Vetrov, 2017).** Here the sparsity signal comes from
+the KL divergence between a per-weight log-uniform prior and a factorised
+Gaussian posterior. Weights whose posterior log-variance exceeds a
+threshold are pruned. The *form* is very different (a Bayesian prior
+instead of a deterministic penalty) but the *effect* is similar - both
+drive a bimodal weight / gate distribution, and both surface the same
+emergent property we observe in Section 3.7: weights pruned away tend to
+have been small to begin with.
+
+**A.3 The Lottery Ticket Hypothesis
+(Frankle, Carbin, 2019).** Lottery-ticket pruning is *post-hoc* - train
+dense, magnitude-prune, rewind to init, retrain. The hypothesis is that a
+sparse sub-network was already present at initialisation. Our scheme sits
+on the opposite end of the continuum: pruning happens **during** training,
+the network decides on its own which sub-network to commit to, and no
+retraining or rewinding is required. Hard-pruning accuracy (Section 3.5)
+gives a direct measurement of whether that sub-network is self-consistent,
+and the +0.07% worst-case drop across the sweep says it is.
+
+**A.4 Why L1 on $\sigma(g)$ and not L1 on $W$ directly.** Classical
+weight-decay / L1-on-$W$ shrinks *every* weight monotonically and does not
+produce a bimodal distribution: weights smoothly approach zero. The gate
+parameterisation decouples **magnitude** (carried by $W$, free to take any
+value) from **selection** (carried by $g$, pushed toward the two
+attractors $g \to -\infty$ and $g \to +\infty$). The gradient of
+$\sigma(g)(1-\sigma(g))$ vanishes at both limits - once a weight commits,
+the penalty no longer chases it. That is the combinatorial behaviour of
+exact L0, recovered smoothly.
+
+In short: the scheme is the **deterministic, L1-relaxed** point in the
+L0-relaxation design space, chosen here because it is (a) what the case
+study prompt specifies, (b) stable under the calibration procedure of
+Section 4.3 and (c) avoids the stochastic-gradient variance that makes
+hard-concrete / variational-dropout implementations finicky to tune.
+
+---
+
 ## References
 
 1. Tolstikhin et al. (2021). *MLP-Mixer: An all-MLP Architecture for Vision.* NeurIPS.
 2. Han, Pool, Tran, Dally (2015). *Learning both Weights and Connections for Efficient Neural Networks.* NeurIPS.
 3. Louizos, Welling, Kingma (2018). *Learning Sparse Neural Networks through L0 Regularization.* ICLR.
-4. Loshchilov, Hutter (2019). *Decoupled Weight Decay Regularization.* ICLR.
-5. Zhang, Cisse, Dauphin, Lopez-Paz (2018). *mixup: Beyond Empirical Risk Minimization.* ICLR.
-6. DeVries, Taylor (2017). *Improved Regularization of Convolutional Neural Networks with Cutout.* arXiv:1708.04552.
-7. Kingma, Ba (2015). *Adam: A Method for Stochastic Optimization.* ICLR.
-8. Krizhevsky (2009). *Learning Multiple Layers of Features from Tiny Images.* Technical Report (CIFAR-10).
+4. Molchanov, Ashukha, Vetrov (2017). *Variational Dropout Sparsifies Deep Neural Networks.* ICML.
+5. Frankle, Carbin (2019). *The Lottery Ticket Hypothesis: Finding Sparse, Trainable Neural Networks.* ICLR.
+6. Loshchilov, Hutter (2019). *Decoupled Weight Decay Regularization.* ICLR.
+7. Zhang, Cisse, Dauphin, Lopez-Paz (2018). *mixup: Beyond Empirical Risk Minimization.* ICLR.
+8. DeVries, Taylor (2017). *Improved Regularization of Convolutional Neural Networks with Cutout.* arXiv:1708.04552.
+9. Kingma, Ba (2015). *Adam: A Method for Stochastic Optimization.* ICLR.
+10. Krizhevsky (2009). *Learning Multiple Layers of Features from Tiny Images.* Technical Report (CIFAR-10).
