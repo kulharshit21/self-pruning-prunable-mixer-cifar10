@@ -1,0 +1,7 @@
+# Developer toolchain. Installed via:   pip install -r requirements-dev.txt
+-r requirements.txt
+
+ruff>=0.5
+black>=24.0
+pre-commit>=3.5
+nbstripout>=0.7

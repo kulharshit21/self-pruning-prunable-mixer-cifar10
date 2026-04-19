@@ -1,0 +1,21 @@
+# ruff + black configuration (minimal, sensible defaults)
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = ["self_pruning_mlp_cifar10.py", "self_pruning_mlp_cifar10.ipynb"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = [
+  "E501",  # line length (handled by formatter)
+  "E731",  # lambda expressions
+  "B008",  # function calls in argument defaults (field(default_factory=))
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+extend-exclude = "self_pruning_mlp_cifar10\\.py|self_pruning_mlp_cifar10\\.ipynb"
