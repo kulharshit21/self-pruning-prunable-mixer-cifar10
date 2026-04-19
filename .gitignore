@@ -29,6 +29,9 @@ checkpoints/
 .DS_Store
 Thumbs.db
 
+# ---------- Microsoft Office lock files ----------
+~$*
+
 # ---------- Scratch files ----------
 _*.py
 *.log
