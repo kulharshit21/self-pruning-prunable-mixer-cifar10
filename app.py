@@ -170,8 +170,7 @@ def build_ui():
 
     default_lam = list(LAMBDAS.keys())[1]  # balanced
 
-    with gr.Blocks(title="Self-Pruning PrunableMixer (CIFAR-10)",
-                   theme=gr.themes.Soft()) as ui:
+    with gr.Blocks(title="Self-Pruning PrunableMixer (CIFAR-10)") as ui:
         gr.Markdown(tradeoff_md)
         with gr.Row():
             with gr.Column(scale=1):
@@ -198,9 +197,12 @@ def build_ui():
 
 
 def main() -> None:
+    import gradio as gr
+
     ui = build_ui()
     # SERVER_NAME / SERVER_PORT overridable for Spaces / Docker deployments.
     ui.launch(
+        theme=gr.themes.Soft(),
         server_name=os.environ.get("GRADIO_SERVER_NAME", "127.0.0.1"),
         server_port=int(os.environ.get("GRADIO_SERVER_PORT", "7860")),
         show_error=True,
