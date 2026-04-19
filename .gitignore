@@ -1,0 +1,35 @@
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# ---------- Jupyter ----------
+.ipynb_checkpoints/
+
+# ---------- CIFAR-10 cache ----------
+data/
+cifar-10-batches-py/
+cifar-10-python.tar.gz
+
+# ---------- Large training artefacts ----------
+# Checkpoints are ~457 MB each -> exceed GitHub's 100 MB file limit.
+# Re-create by running the notebook or self_pruning_mlp_cifar10.py,
+# or download from the repo's Releases page.
+checkpoints/
+*.pt
+*.pth
+
+# ---------- Editor / OS ----------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ---------- Scratch files ----------
+_*.py
+*.log
+*.tmp
